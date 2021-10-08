@@ -10,12 +10,6 @@ import br.ce.wcaquino.entidades.Usuario;
 
 public class LocacaoService {
 	
-	// linhas 14 a 17 apenas para exemplo, podem ser removidas
-	public String variavelPublica;
-	protected String variavelProtegida;
-	private String variavelPrivada;
-	String variavelDefault;
-	
 	public Locacao alugarFilme(Usuario usuario, Filme filme) {
 		Locacao locacao = new Locacao();
 		locacao.setFilme(filme);
