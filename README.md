@@ -3,7 +3,9 @@ This is an example project from the classic video store to practice unit testing
 
 ATALHO PARA EXECUÇÃO DO TESTE: Ctrl + F11 com o cursor em cima do nome do teste
 
-Aula 8 - Formas de dividir um teste
+Aula 9 - Tratamento de exceções: parte 1
 
-Lembre-se sempre da sigla FIRST.
-Alguns integrantes das comunidades deram um novo significado para o "I", que seria "Isolado", ou seja, o teste deveria ser também isolado com sua própria assertiva.
+Nesta aula vamos adicionar uma nova regra, que é a seguinte:
+	- um usuário não pode alugar filmes sem estoque
+
+Para isso, iremos colocar uma validação no nosso método de locação, e se não tiver o filme no estoque, uma exceção será lançada.
