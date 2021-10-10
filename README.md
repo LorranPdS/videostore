@@ -16,3 +16,5 @@ Aula 11 - Before e After
 Execute o teste e veja no console como ficou a impressão em tela para que você entenda melhor quando cada uma dessas anotações funcionaram
 
 Após isso, foi feito um exercício em que é criado um contador
+
+Observação: ao colocar o static na variável "contador", ela deixou de ficar na instância do teste e, por ser static, ela passou para o escopo da classe, e esse tipo de variável o JUnit não vai reinicializar
