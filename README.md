@@ -3,14 +3,16 @@ This is an example project from the classic video store to practice unit testing
 
 ATALHO PARA EXECUÇÃO DO TESTE: Ctrl + F11 com o cursor em cima do nome do teste
 
-Aula 10 - Tratamento de exceções: parte 2
+Aula 11 - Before e After
 
-Nesta aula adicionaremos ainda mais duas validações: usuário e filme são obrigatórios
+@Before: anotação usada para que o método com essa anotação seja executado antes de cada teste. Se tivermos 10 testes, o método que estiver a anotação @Before será executado 10 vezes também
 
-Vamos novamente usar para cada uma os tratamentos de exceção da forma elegante, robusta e nova.
+@After: anotação usada para que o método com essa anotação seja executado após cada teste. Se tivermos 10 testes, o método que estiver a anotação @After será executado 10 vezes também
 
-Forma Elegante: funciona bem quando apenas a exceção importa para você, ou seja, são os casos em que você consegue garantir o motivo pelo qual a exceção foi lançada. Caso precise de alguma mensagem, você vai precisar a forma Robusta ou Nova
+@BeforeClass: anotação usada para que o método com essa anotação executado antes da classe ser instanciada. Se tivermos 10 testes, o método que estiver a anotação @BeforeClass será executado 1 vez antes de começarmos os testes
 
-Forma Nova: atende na maioria dos casos porém existirão pontos em que somente a forma Robusta vai ajudar
+@AfterClass: anotação usada para que o método com essa anotação executado após a classe ser finalizada. Se tivermos 10 testes, o método que estiver a anotação @AfterClass será executado 1 vez após finalizarmos todos os testes
 
-Forma Robusta: caso não queira ficar decorando as três formas e prefere usar apenas uma, a mais recomendada é esta forma por ela ser a mais completa
+Execute o teste e veja no console como ficou a impressão em tela para que você entenda melhor quando cada uma dessas anotações funcionaram
+
+Após isso, foi feito um exercício em que é criado um contador
