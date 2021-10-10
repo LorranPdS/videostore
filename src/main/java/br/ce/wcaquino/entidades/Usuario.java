@@ -29,11 +29,11 @@ public class Usuario {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) // verifica se o objeto é o mesmo
+		if (this == obj)
 			return true;
-		if (obj == null) // verifica se o objeto não é nulo
+		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass()) // verifica se o objeto é da mesma classe
+		if (getClass() != obj.getClass())
 			return false;
 		Usuario other = (Usuario) obj;
 		if (nome == null) {
