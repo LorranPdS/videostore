@@ -2,6 +2,7 @@ package br.ce.wcaquino.servicos;
 
 import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
+import br.ce.wcaquino.utils.DataUtils;
 
 public class LocacaoService {
 	
@@ -45,26 +47,6 @@ public class LocacaoService {
 				case 5: valorFilme = 0d; break;
 			}
 				
-//			COMO ESTAVA ANTES
-//			if(i == 2) {
-//				valorFilme = valorFilme * 0.75;
-//			}
-//			
-//			// 4ª alteração
-//			if(i == 3) {
-//				valorFilme = valorFilme * 0.5;
-//			}
-//			
-//			// 6ª alteração
-//			if(i == 4) {
-//				valorFilme = valorFilme * 0.25;
-//			}
-//			
-//			// 8ª alteração
-//			if(i == 5) {
-//				valorFilme = 0d;
-//			}
-			
 			valorTotal += valorFilme;
 		}
 		locacao.setValor(valorTotal);
@@ -72,6 +54,11 @@ public class LocacaoService {
 		//Entrega no dia seguinte
 		Date dataEntrega = new Date();
 		dataEntrega = adicionarDias(dataEntrega, 1);
+		
+		// 2ª - criar as condições
+		if(DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)) {
+			dataEntrega = adicionarDias(dataEntrega, 1);
+		}
 		locacao.setDataRetorno(dataEntrega);
 		
 		//Salvando a locacao...	
