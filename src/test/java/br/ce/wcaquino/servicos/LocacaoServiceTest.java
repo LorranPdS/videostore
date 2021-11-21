@@ -41,7 +41,6 @@ public class LocacaoServiceTest {
 		service = new LocacaoService();
 	}
 
-	// esse método aqui só não vai funcionar se for sábado
 	@Test
 	public void deveAlugarFilme() throws Exception {
 
@@ -101,87 +100,7 @@ public class LocacaoServiceTest {
 	}
 	
 	@Test
-	public void devePagar75PctNoFilme3() throws FilmeSemEstoqueException, LocadoraException {
-		// cenário
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(
-				new Filme("Filme 1", 2, 4.0),
-				new Filme("Filme 2", 2, 4.0), 
-				new Filme("Filme 3", 2, 4.0));
-		
-		// ação
-		Locacao resultado = service.alugarFilme(usuario, filmes);
-		
-		// verificação
-		// O valor seria o seguinte: 4+4+3=11
-		assertThat(resultado.getValor(), is(11.0));
-	}
-	
-	@Test
-	public void devePagar50PctNoFilme4() throws FilmeSemEstoqueException, LocadoraException {
-		// cenário
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(
-				new Filme("Filme 1", 2, 4.0),
-				new Filme("Filme 2", 2, 4.0), 
-				new Filme("Filme 3", 2, 4.0),
-				new Filme("Filme 4", 2, 4.0));
-		
-		// ação
-		Locacao resultado = service.alugarFilme(usuario, filmes);
-		
-		// verificação
-		// O valor seria o seguinte: 4+4+3+2=13
-		assertThat(resultado.getValor(), is(13.0));
-	}
-	
-	@Test
-	public void devePagar25PctNoFilme5() throws FilmeSemEstoqueException, LocadoraException {
-		// cenário
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(
-				new Filme("Filme 1", 2, 4.0),
-				new Filme("Filme 2", 2, 4.0), 
-				new Filme("Filme 3", 2, 4.0),
-				new Filme("Filme 4", 2, 4.0),
-				new Filme("Filme 5", 2, 4.0));
-			
-		// ação
-		Locacao resultado = service.alugarFilme(usuario, filmes);
-			
-		// verificação
-		// O valor seria o seguinte: 4+4+3+2+1=14
-		assertThat(resultado.getValor(), is(14.0));
-	}
-	
-	@Test
-	public void devePagarZeroPctNoFilme6() throws FilmeSemEstoqueException, LocadoraException {
-		// cenário
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(
-				new Filme("Filme 1", 2, 4.0),
-				new Filme("Filme 2", 2, 4.0), 
-				new Filme("Filme 3", 2, 4.0),
-				new Filme("Filme 4", 2, 4.0),
-				new Filme("Filme 5", 2, 4.0),
-				new Filme("Filme 6", 2, 4.0));
-		
-		// ação
-		Locacao resultado = service.alugarFilme(usuario, filmes);
-		
-		// verificação
-		// O valor seria o seguinte: 4+4+3+2+1+0=14
-		assertThat(resultado.getValor(), is(14.0));
-	}
-	
-	// Solução 1: tirar a anotação de teste do método abaixo (não recomendado porque se você tiver uma bateria muito grande de testes, você vai se esquecer que esse teste foi comentado)
-	// Solução 2: utilizar a anotação @Ignore abaixo da anotação @Test (a diferença é que ela vai dizer que os 9 testes foram executados mas vai dizer que um deles foi pulado [skipped])
-	// 		- com essa anotação, ele diz que existe o teste mas o teste não foi executado. Vamos evitar que ao chegar no sábado tenhamos que trocar o @Ignore pro outro método
-	// Solução 3: vamos usar o Assumptions e tirar o @Ignore
-	@Test
 	public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
-		
-		// vai ser semelhante ao @Ignore porque abaixo temos uma lógica (troque o dia para sábado no seu computador para testar)
 		Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 		
 		// cenário
