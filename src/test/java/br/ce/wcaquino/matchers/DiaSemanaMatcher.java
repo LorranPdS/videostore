@@ -9,8 +9,6 @@ import org.hamcrest.TypeSafeMatcher;
 
 import br.ce.wcaquino.utils.DataUtils;
 
-// 2) Criação do pacote e do Matcher, que seria este aqui
-
 public class DiaSemanaMatcher extends TypeSafeMatcher<Date> {
 
 	private Integer diaSemana;
@@ -19,7 +17,6 @@ public class DiaSemanaMatcher extends TypeSafeMatcher<Date> {
 		this.diaSemana = diaSemana;
 	}
 	
-	// 4) para melhorarmos a mensagem de erro porque ela não estava tão explicativa
 	public void describeTo(Description desc) {
 		Calendar data = Calendar.getInstance();
 		data.set(Calendar.DAY_OF_WEEK, diaSemana);
