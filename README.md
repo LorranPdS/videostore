@@ -4,16 +4,14 @@ This is an example project from the classic video store to practice unit testing
 ATALHO PARA EXECUÇÃO DO TESTE: Ctrl + F11 com o cursor em cima do nome do teste
 Oriente-se pelos commits exibidos no Github para seguir a sequência de aulas
 
-Aula 18 - Testes parametrizáveis
+Aula 19 - Matchers próprios
 
-O código de testes é tão importante quanto quanto o código de sistemas que estamos desenvolvendo, então temos que ter o mesmo cuidado com os testes
+Vamos aprender a criar nosso próprio Matcher para ser usado no nosso AssertThat
 
-No ciclo TDD, nós fazemos o teste, codifico até que o teste passe e refatoro o código, e essa refatoração também pode ser aplicada aos testes
+Podemos criar um matcher buscando objetivos como:
+. melhorar a legibilidade do código
+. para centralizar alguma regra específica do seu projeto
 
-Nesta aula vamos ver um recurso que vai reduzir bastante os códigos duplicados nos nossos testes
-. Parameters
-. DDT
+Caso você e sua equipe tenha uma biblioteca própria de matcher, a criação dos testes ficará bem mais simples
 
-Comentário final:
-- A estrutura desse teste é mais complexa porém a dinamicidade que ele traz compensa o esforço
-- Testes Data Driven são muito comuns no dia a dia e essa é a forma de se trabalhar com eles que apresenta os melhores resultados
+O professor considera a criação do Matcher um pouco complexo mas diz que é um trabalho que teremos só uma vez e será utilizado sempre que necessário, inclusive por outros membros da nossa equipe

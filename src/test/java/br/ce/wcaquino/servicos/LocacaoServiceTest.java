@@ -1,5 +1,7 @@
 package br.ce.wcaquino.servicos;
 
+import static br.ce.wcaquino.matchers.MatchersProprios.caiEm;
+import static br.ce.wcaquino.matchers.MatchersProprios.caiNumaSegunda;
 import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
 import static br.ce.wcaquino.utils.DataUtils.obterDataComDiferencaDias;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -111,7 +113,13 @@ public class LocacaoServiceTest {
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
 		// verificação
-		boolean ehSegunda = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.MONDAY);
-		Assert.assertTrue(ehSegunda);
+		
+		// 2) aqui vamos montar nosso primeiro matcher fazendo dessas duas formas abaixo (a primeira está melhor)
+		assertThat(retorno.getDataRetorno(), caiNumaSegunda()); // fiz o import estático 'Add import'
+//		assertThat(retorno.getDataRetorno(), caiEm(Calendar.MONDAY)); // fiz o import estático 'Add import'
+		
+		
+		// Observação: coloque o computador com sendo sábado para conseguir testar
+		// troque por um outro dia pra ver se realmente não vai funcionar
 	}
 }
