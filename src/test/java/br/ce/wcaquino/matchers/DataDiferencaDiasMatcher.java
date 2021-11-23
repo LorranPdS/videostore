@@ -7,8 +7,6 @@ import org.hamcrest.TypeSafeMatcher;
 
 import br.ce.wcaquino.utils.DataUtils;
 
-// 3) RESPOSTA
-
 public class DataDiferencaDiasMatcher extends TypeSafeMatcher<Date> {
 
 	private Integer qtdDias;
@@ -19,8 +17,6 @@ public class DataDiferencaDiasMatcher extends TypeSafeMatcher<Date> {
 	
 	@Override
 	public void describeTo(Description description) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

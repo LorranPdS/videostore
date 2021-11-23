@@ -70,10 +70,13 @@ public class CalculoValorLocacaoTest {
 		// verificação
 		// O valor seria o seguinte: 4+4+3+2+1=14
 		assertThat(resultado.getValor(), is(valorLocacao));
+		
+		// 4) aqui iremos imprimir só para testes
+		System.out.println("Classe de exemplo");
 	}
 	
-	@Test
-	public void print() {
-		System.out.println(valorLocacao);
-	}
+//	@Test
+//	public void print() {
+//		System.out.println(valorLocacao);
+//	}
 }

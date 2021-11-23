@@ -3,8 +3,6 @@ package br.ce.wcaquino.servicos;
 import static br.ce.wcaquino.matchers.MatchersProprios.caiNumaSegunda;
 import static br.ce.wcaquino.matchers.MatchersProprios.ehHoje;
 import static br.ce.wcaquino.matchers.MatchersProprios.ehHojeComDiferencaDias;
-import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
-import static br.ce.wcaquino.utils.DataUtils.obterDataComDiferencaDias;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -59,17 +57,7 @@ public class LocacaoServiceTest {
 
 		// verificação
 		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
-		
-		error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
-//		error.checkThat(locacao.getDataLocacao(), ehHoje()); // 2) aqui seria a segunda troca chamando um parâmetro já definido
-		
-		// RESPOSTA
 		error.checkThat(locacao.getDataLocacao(), ehHoje());
-		
-		error.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
-//		error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1)); // 1) Como o primeiro matcher deve ficar
-		
-		// RESPOSTA
 		error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1));
 	}
 	
