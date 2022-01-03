@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -15,6 +16,8 @@ import br.ce.wcaquino.utils.DataUtils;
 import buildermaster.BuilderMaster;
 
 public class LocacaoService {
+	
+	private LocacaoDao dao;
 	
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 		
@@ -61,13 +64,13 @@ public class LocacaoService {
 		}
 		locacao.setDataRetorno(dataEntrega);
 		
-		//Salvando a locacao...	
+		//Salvando a locacao...	A linha abaixo irá fazer algo para persistir a locação (não importa se a persistência será feita em arquivo, BD, ...)
 		//TODO adicionar método para salvar
+		dao.salvar(locacao);
 		
 		return locacao;
 	}
 	
-	// sobre o problema da aula anterior: era pra ter sido rodado aqui nessa classe, não naquela anterior
 	public static void main(String[] args) {
 		new BuilderMaster().gerarCodigoClasse(LocacaoService.class);
 	}
