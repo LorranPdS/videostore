@@ -29,6 +29,7 @@ import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
+import buildermaster.BuilderMaster;
 
 public class LocacaoServiceTest {
 
@@ -39,6 +40,10 @@ public class LocacaoServiceTest {
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
+	
+	public static void main(String[] args) {
+		new BuilderMaster().gerarCodigoClasse(LocacaoService.class);
+	}
 	
 	@Before
 	public void setup() {
@@ -52,10 +57,8 @@ public class LocacaoServiceTest {
 		Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 		
 		// cenário
-		// 2) Abaixo onde precisamos de um usuário, vamos trocar para o builder que fizemos anteriormente
-//		Usuario usuario = UsuarioBuilder.umUsuario().agora();
-		Usuario usuario = umUsuario().agora(); // foi feito um import estático aqui, ele estava do jeito que estava logo acima
-		List<Filme> filmes = Arrays.asList(umFilme().comValor(5.0).agora()); // 4) aqui também foi feito import estático
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilme().comValor(5.0).agora());
 		
 		// ação
 		Locacao locacao = service.alugarFilme(usuario, filmes);
@@ -119,4 +122,5 @@ public class LocacaoServiceTest {
 		// verificação
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
 	}
+	
 }
