@@ -9,6 +9,7 @@ import static br.ce.wcaquino.matchers.MatchersProprios.ehHojeComDiferencaDias;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -36,6 +37,9 @@ public class LocacaoServiceTest {
 
 	private LocacaoService service;
 	
+	private SPCService spc;
+	private LocacaoDao dao;
+	
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
 	
@@ -45,19 +49,10 @@ public class LocacaoServiceTest {
 	@Before
 	public void setup() {
 		service = new LocacaoService();
-		
-		/*
-		 * O mock é uma instância de um objeto que, para todos os efeitos, responde como se
-		 * estivesse implementando a classe que ele usou como origem, porém ele é genérico 
-		 * e não tem como saber como deve se comportar, então ele fará um comportamento padrão
-		 * de acordo com a assinatura do método, ou seja:
-		 * 1) se o método for void - ele não faz nada
-		 * 2) se o método retornar um número - ele retorna zero
-		 * 3) se o método retornar uma String - ele retorna uma string vazia
-		 * 4) se o método for um objeto - vai retornar null
-		 */
-		LocacaoDao dao = Mockito.mock(LocacaoDao.class); // dentro dele passamos a interface que queremos mockar
+		dao = Mockito.mock(LocacaoDao.class);
 		service.setLocacaoDAO(dao);
+		spc = Mockito.mock(SPCService.class);
+		service.setSPCService(spc);
 	}
 
 	@Test
@@ -133,4 +128,28 @@ public class LocacaoServiceTest {
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
 	}
 	
+	@Test
+	public void naoDeveAlugarFilmeParaNegativadoSPC() throws FilmeSemEstoqueException, LocadoraException {
+		// cenário
+		Usuario usuario = umUsuario().agora();
+//		Usuario usuario2 = umUsuario().comNome("Usuário 2").agora(); -> caso queira testar para um usuário diferente
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
+		
+		/*
+		 * A leitura abaixo é a seguinte:
+		 * Quando o spc.possuiNegativacao for chamado passando como parâmetro um usuário,
+		 * então retorne (thenReturn) true
+		 * 
+		 * Dessa forma conseguimos fazer a alteração de comportamento de um objeto mockado,
+		 * que no nosso exemplo, como sempre iria retornar false, ele irá retornar true abaixo
+		 */
+		when(spc.possuiNegativacao(usuario)).thenReturn(true);
+		
+		exception.expect(LocadoraException.class);
+		exception.expectMessage("Usuário negativado");
+		
+		// ação
+		service.alugarFilme(usuario, filmes);
+//		service.alugarFilme(usuario2, filmes); -> relativo ao teste com usuario2
+	}
 }

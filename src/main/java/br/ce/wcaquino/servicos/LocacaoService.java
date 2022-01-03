@@ -13,11 +13,11 @@ import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
-import buildermaster.BuilderMaster;
 
 public class LocacaoService {
 	
 	private LocacaoDao dao;
+	private SPCService spcService;
 	
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 		
@@ -33,6 +33,15 @@ public class LocacaoService {
 			if(filme.getEstoque() == 0) {
 				throw new FilmeSemEstoqueException();
 			}
+		}
+		
+		/*
+		 * Veja que a exceção só será lançada se a chamada ao método "possuiNegativacao" retornar
+		 * true, PORÉM o retorno padrão de um mock é false, então eu preciso alterar um comportamento
+		 * desse método para esse caso. Definimos isso lá no cenário de teste
+		 */
+		if(spcService.possuiNegativacao(usuario)) {
+			throw new LocadoraException("Usuário negativado");
 		}
 		
 		Locacao locacao = new Locacao();
@@ -64,18 +73,17 @@ public class LocacaoService {
 		}
 		locacao.setDataRetorno(dataEntrega);
 		
-		//TODO adição método para salvar
 		dao.salvar(locacao);
 		
 		return locacao;
 	}
 	
-	// vamos fazer a injeção de dependência
 	public void setLocacaoDAO(LocacaoDao dao) {
 		this.dao = dao;
 	}
 	
-	public static void main(String[] args) {
-		new BuilderMaster().gerarCodigoClasse(LocacaoService.class);
+	public void setSPCService(SPCService spc) {
+		spcService = spc;
 	}
+	
 }
