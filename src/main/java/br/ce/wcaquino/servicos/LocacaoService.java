@@ -12,6 +12,7 @@ import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
+import buildermaster.BuilderMaster;
 
 public class LocacaoService {
 	
@@ -66,4 +67,8 @@ public class LocacaoService {
 		return locacao;
 	}
 	
+	// sobre o problema da aula anterior: era pra ter sido rodado aqui nessa classe, não naquela anterior
+	public static void main(String[] args) {
+		new BuilderMaster().gerarCodigoClasse(LocacaoService.class);
+	}
 }
