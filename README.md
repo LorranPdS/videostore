@@ -4,10 +4,12 @@ This is an example project from the classic video store to practice unit testing
 ATALHO PARA EXECUÇÃO DO TESTE: Ctrl + F11 com o cursor em cima do nome do teste
 Oriente-se pelos commits exibidos no Github para seguir a sequência de aulas
 
-Aula 26 - Objetos falsos
+Aula 27 - Mockito
 
-Com a adição da interface do DAO, nossos testes deixaram de funcionar porque o nosso DAO precisa ser instanciado. O problema é que não temos ainda uma implementação desse DAO e mesmo que tivéssemos, não poderíamos utiliza-la por estarmos no escopo de testes unitários, ou seja, os nossos testes precisam estar isolados do mundo externo.
+O uso de objetos falsos resolve nosso problema isolando os testes do mundo externo mas dá muito trabalho se você tiver muitas dependências (o que é o comum).
 
-A estratégia que usamos aqui é chamada Fake Object, mas o problema dela é que precisamos implementar uma classe sempre que precisamos isolar os testes de uma entidade externa.
+Existem frameworks que nos ajudam a criar dinamicamente esses objetos falsos, e o framework que será apresentado nesse curso para essa criação será o Mockito.
 
-Na próxima aula iremos ver uma ferramenta usada para substituir classes externas de uma forma mais dinâmica.
+Ele possui esse nome porque ele não gera objetos fake mas sim objetos mock, e nos mocks somos capazes de definir comportamentos dinâmicos e inclusive verificar se ele foi utilizado conforme o esperado.
+
+Vamos refatorar o código para mockar a interface que estava nos dando problemas ao invés de utilizar aquele objeto fake

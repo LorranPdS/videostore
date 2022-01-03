@@ -22,8 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
-import br.ce.wcaquino.daos.LocacaoDAOFake;
 import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
@@ -45,7 +45,18 @@ public class LocacaoServiceTest {
 	@Before
 	public void setup() {
 		service = new LocacaoService();
-		LocacaoDao dao = new LocacaoDAOFake();
+		
+		/*
+		 * O mock é uma instância de um objeto que, para todos os efeitos, responde como se
+		 * estivesse implementando a classe que ele usou como origem, porém ele é genérico 
+		 * e não tem como saber como deve se comportar, então ele fará um comportamento padrão
+		 * de acordo com a assinatura do método, ou seja:
+		 * 1) se o método for void - ele não faz nada
+		 * 2) se o método retornar um número - ele retorna zero
+		 * 3) se o método retornar uma String - ele retorna uma string vazia
+		 * 4) se o método for um objeto - vai retornar null
+		 */
+		LocacaoDao dao = Mockito.mock(LocacaoDao.class); // dentro dele passamos a interface que queremos mockar
 		service.setLocacaoDAO(dao);
 	}
 
