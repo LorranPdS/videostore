@@ -2,7 +2,6 @@ package br.ce.wcaquino.builders;
 
 import br.ce.wcaquino.entidades.Filme;
 
-// 3) Agora fazendo um builder de Filme
 public class FilmeBuilder {
 
 	private Filme filme;
@@ -20,7 +19,6 @@ public class FilmeBuilder {
 		return builder;
 	}
 	
-	// vamos criar um segundo método de entrada
 	public static FilmeBuilder umFilmeSemEstoque() {
 		FilmeBuilder builder = new FilmeBuilder();
 		builder.filme = new Filme();

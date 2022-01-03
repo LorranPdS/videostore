@@ -41,7 +41,6 @@ public class CalculoValorLocacaoTest {
 		service = new LocacaoService();
 	}
 	
-	// 5) Também fiz a troca aqui
 	private static Filme filme1 = umFilme().agora();
 	private static Filme filme2 = umFilme().agora();
 	private static Filme filme3 = umFilme().agora();
@@ -65,7 +64,7 @@ public class CalculoValorLocacaoTest {
 	@Test
 	public void deveCalcularValorLocacaoConsiderendoDescontos() throws FilmeSemEstoqueException, LocadoraException {
 		// cenário
-		Usuario usuario = umUsuario().agora(); // 3) Aqui também que é onde tinha um Usuário nós usamos aquele builder
+		Usuario usuario = umUsuario().agora();
 			
 		// ação
 		Locacao resultado = service.alugarFilme(usuario, filmes);
