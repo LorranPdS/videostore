@@ -4,8 +4,10 @@ This is an example project from the classic video store to practice unit testing
 ATALHO PARA EXECUÇÃO DO TESTE: Ctrl + F11 com o cursor em cima do nome do teste
 Oriente-se pelos commits exibidos no Github para seguir a sequência de aulas
 
-Aula 25 - Dependências externas
+Aula 26 - Objetos falsos
 
-Nessa aula em diante, vamos adicionar uma chamada na classe de serviço que tínhamos omitido desde o início para facilitar a nossa vida. Será uma alteração pequena mas vai mudar bastante da forma como trabalhamos com os testes a partir de agora.
+Com a adição da interface do DAO, nossos testes deixaram de funcionar porque o nosso DAO precisa ser instanciado. O problema é que não temos ainda uma implementação desse DAO e mesmo que tivéssemos, não poderíamos utiliza-la por estarmos no escopo de testes unitários, ou seja, os nossos testes precisam estar isolados do mundo externo.
 
-Há uma regra importante sobre o que é teste unitário: um testes unitário não deve ter dependência externa, como acesso a banco de dados, rede, arquivos ou qualquer outra entidade externa ao código que desejamos testar.
+A estratégia que usamos aqui é chamada Fake Object, mas o problema dela é que precisamos implementar uma classe sempre que precisamos isolar os testes de uma entidade externa.
+
+Na próxima aula iremos ver uma ferramenta usada para substituir classes externas de uma forma mais dinâmica.

@@ -64,11 +64,15 @@ public class LocacaoService {
 		}
 		locacao.setDataRetorno(dataEntrega);
 		
-		//Salvando a locacao...	A linha abaixo irá fazer algo para persistir a locação (não importa se a persistência será feita em arquivo, BD, ...)
-		//TODO adicionar método para salvar
+		//TODO adição método para salvar
 		dao.salvar(locacao);
 		
 		return locacao;
+	}
+	
+	// vamos fazer a injeção de dependência
+	public void setLocacaoDAO(LocacaoDao dao) {
+		this.dao = dao;
 	}
 	
 	public static void main(String[] args) {
