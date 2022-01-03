@@ -4,12 +4,9 @@ This is an example project from the classic video store to practice unit testing
 ATALHO PARA EXECUÇÃO DO TESTE: Ctrl + F11 com o cursor em cima do nome do teste
 Oriente-se pelos commits exibidos no Github para seguir a sequência de aulas
 
-Aula 27 - Mockito
+Aula 28 - Gravando expectativas
 
-O uso de objetos falsos resolve nosso problema isolando os testes do mundo externo mas dá muito trabalho se você tiver muitas dependências (o que é o comum).
+O que acontece quando o comportamento que esperamos em algum relacionamento externo difere do comportamento padrão de um mock?
+Como foi dito na aula anterior, o mockito cria um objeto que responde como se fosse um objeto real PORÉM ele não sabe o que fazer, e nesse caso cabe a nós ensinar o objeto mockado como ele deve reagir a cada pergunta feita a ele para que, durante a execução do teste, ele se comporte exatamente como a classe real se comportaria. Vamos fazer isso implementando a seguinte funcionalidade:
 
-Existem frameworks que nos ajudam a criar dinamicamente esses objetos falsos, e o framework que será apresentado nesse curso para essa criação será o Mockito.
-
-Ele possui esse nome porque ele não gera objetos fake mas sim objetos mock, e nos mocks somos capazes de definir comportamentos dinâmicos e inclusive verificar se ele foi utilizado conforme o esperado.
-
-Vamos refatorar o código para mockar a interface que estava nos dando problemas ao invés de utilizar aquele objeto fake
+A Locadora não deve permitir aluguel de filmes para caloteiros, ou seja, se o usuário estiver negativado no SPC, nem filme ele vai poder levar para casa.
