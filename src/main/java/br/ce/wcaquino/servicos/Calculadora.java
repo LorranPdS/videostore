@@ -19,7 +19,6 @@ public class Calculadora {
 		return a / b;
 	}
 	
-	// criado só para mostrar a ideia do coverage
 	public int divide(String a, String b) {
 		return Integer.valueOf(a) / Integer.valueOf(b);
 	}
