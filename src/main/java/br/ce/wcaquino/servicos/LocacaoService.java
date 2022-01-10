@@ -18,6 +18,7 @@ public class LocacaoService {
 	
 	private LocacaoDao dao;
 	private SPCService spcService;
+	private EmailService emailService;
 	
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 		
@@ -35,11 +36,6 @@ public class LocacaoService {
 			}
 		}
 		
-		/*
-		 * Veja que a exceção só será lançada se a chamada ao método "possuiNegativacao" retornar
-		 * true, PORÉM o retorno padrão de um mock é false, então eu preciso alterar um comportamento
-		 * desse método para esse caso. Definimos isso lá no cenário de teste
-		 */
 		if(spcService.possuiNegativacao(usuario)) {
 			throw new LocadoraException("Usuário negativado");
 		}
@@ -78,12 +74,23 @@ public class LocacaoService {
 		return locacao;
 	}
 	
+	public void notificarAtrasos() {
+		List<Locacao> locacoes = dao.obterLocacoesPendentes();
+		for(Locacao locacao : locacoes) {
+			emailService.notificarAtraso(locacao.getUsuario());
+		}
+	}
+	
 	public void setLocacaoDAO(LocacaoDao dao) {
 		this.dao = dao;
 	}
 	
 	public void setSPCService(SPCService spc) {
 		spcService = spc;
+	}
+	
+	public void setEmailService(EmailService email) {
+		emailService = email;
 	}
 	
 }

@@ -25,6 +25,7 @@ import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
+import br.ce.wcaquino.builders.LocacaoBuilder;
 import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
@@ -39,6 +40,7 @@ public class LocacaoServiceTest {
 	
 	private SPCService spc;
 	private LocacaoDao dao;
+	private EmailService email;
 	
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
@@ -53,6 +55,8 @@ public class LocacaoServiceTest {
 		service.setLocacaoDAO(dao);
 		spc = Mockito.mock(SPCService.class);
 		service.setSPCService(spc);
+		email = Mockito.mock(EmailService.class);
+		service.setEmailService(email);
 	}
 
 	@Test
@@ -129,27 +133,47 @@ public class LocacaoServiceTest {
 	}
 	
 	@Test
-	public void naoDeveAlugarFilmeParaNegativadoSPC() throws FilmeSemEstoqueException, LocadoraException {
+	public void naoDeveAlugarFilmeParaNegativadoSPC() throws FilmeSemEstoqueException {
 		// cenário
 		Usuario usuario = umUsuario().agora();
-//		Usuario usuario2 = umUsuario().comNome("Usuário 2").agora(); -> caso queira testar para um usuário diferente
+//		Usuario usuario2 = umUsuario().comNome("Usuario 2").agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
-		/*
-		 * A leitura abaixo é a seguinte:
-		 * Quando o spc.possuiNegativacao for chamado passando como parâmetro um usuário,
-		 * então retorne (thenReturn) true
-		 * 
-		 * Dessa forma conseguimos fazer a alteração de comportamento de um objeto mockado,
-		 * que no nosso exemplo, como sempre iria retornar false, ele irá retornar true abaixo
-		 */
 		when(spc.possuiNegativacao(usuario)).thenReturn(true);
 		
-		exception.expect(LocadoraException.class);
-		exception.expectMessage("Usuário negativado");
+		// ação
+		try {
+			service.alugarFilme(usuario, filmes);
+			// verificação
+			
+			Assert.fail();
+		} catch (LocadoraException e) {
+			Assert.assertThat(e.getMessage(), is("Usuário negativado"));
+		}
+		
+		Mockito.verify(spc).possuiNegativacao(usuario);
+//		Mockito.verify(spc).possuiNegativacao(usuario2);
+	}
+	
+	@Test
+	public void deveEnviarEmailParaLocacoesAtrasadas() {
+		// cenário
+		Usuario usuario = umUsuario().agora();
+//		Usuario usuario2 = umUsuario().comNome("Usuario 2").agora(); //-> essa seria a linha do unhappy path para termos certeza que não está sendo gerado um falso positivo
+		
+		List<Locacao> locacoes = Arrays.asList(
+				LocacaoBuilder.umLocacao()
+				.comUsuario(usuario)
+				.comDataRetorno(DataUtils.obterDataComDiferencaDias(-2))
+				.agora());
+		
+		Mockito.when(dao.obterLocacoesPendentes()).thenReturn(locacoes);
 		
 		// ação
-		service.alugarFilme(usuario, filmes);
-//		service.alugarFilme(usuario2, filmes); -> relativo ao teste com usuario2
+		service.notificarAtrasos();
+		
+		// verificação
+		Mockito.verify(email).notificarAtraso(usuario); // veja que fizemos uma verificação do mesmo método descrito na ação
+//		Mockito.verify(email).notificarAtraso(usuario2); //-> aqui você coloca o usuário que seria do unhappy path
 	}
 }
