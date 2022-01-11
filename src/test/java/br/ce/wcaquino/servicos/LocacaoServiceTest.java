@@ -27,7 +27,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
@@ -39,10 +42,16 @@ import br.ce.wcaquino.utils.DataUtils;
 
 public class LocacaoServiceTest {
 
+	// vamos ter que criar aqueles 3 mocks com as anotações e injetar esses mocks na classe de teste abaixo (por isso a anotação injectmocks)
+	@InjectMocks
 	private LocacaoService service;
 	
+	// colocando essas anotações de mock o teste já vai saber que essas são as classes que estão mockadas
+	@Mock
 	private SPCService spc;
+	@Mock
 	private LocacaoDao dao;
+	@Mock
 	private EmailService email;
 	
 	@Rule
@@ -53,13 +62,16 @@ public class LocacaoServiceTest {
 	
 	@Before
 	public void setup() {
-		service = new LocacaoService();
-		dao = Mockito.mock(LocacaoDao.class);
-		service.setLocacaoDAO(dao);
-		spc = Mockito.mock(SPCService.class);
-		service.setSPCService(spc);
-		email = Mockito.mock(EmailService.class);
-		service.setEmailService(email);
+		// coloque isso abaixo para iniciar os mocks e as linhas de baixo não serão mais necessárias
+		MockitoAnnotations.initMocks(this);
+		
+//		service = new LocacaoService();
+//		dao = Mockito.mock(LocacaoDao.class);
+//		service.setLocacaoDAO(dao);
+//		spc = Mockito.mock(SPCService.class);
+//		service.setSPCService(spc);
+//		email = Mockito.mock(EmailService.class);
+//		service.setEmailService(email);
 	}
 
 	@Test

@@ -15,7 +15,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
@@ -27,24 +29,35 @@ import br.ce.wcaquino.exceptions.LocadoraException;
 @RunWith(Parameterized.class)
 public class CalculoValorLocacaoTest {
 
+	// aqui vou injetar os mocks
+	@InjectMocks
+	private LocacaoService service;
+	
+	@Mock
+	private LocacaoDao dao;
+	
+	@Mock
+	private SPCService spc;
+	
 	@Parameter
 	public List<Filme> filmes;
 	
 	@Parameter(value = 1)
 	public Double valorLocacao;
 	
-	private LocacaoService service;
-	
 	@Parameter(value = 2)
 	public String cenario;
 	
 	@Before
 	public void setup() {
-		service = new LocacaoService();
-		LocacaoDao dao = Mockito.mock(LocacaoDao.class);
-		service.setLocacaoDAO(dao);
-		SPCService spc = Mockito.mock(SPCService.class);
-		service.setSPCService(spc);
+		// coloco apenas a linha abaixo para iniciar as classes mockadas
+		MockitoAnnotations.initMocks(this);
+		
+//		service = new LocacaoService();
+//		LocacaoDao dao = Mockito.mock(LocacaoDao.class);
+//		service.setLocacaoDAO(dao);
+//		SPCService spc = Mockito.mock(SPCService.class);
+//		service.setSPCService(spc);
 	}
 	
 	private static Filme filme1 = umFilme().agora();
