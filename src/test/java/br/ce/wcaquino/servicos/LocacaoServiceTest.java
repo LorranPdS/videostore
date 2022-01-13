@@ -7,13 +7,18 @@ import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
 import static br.ce.wcaquino.matchers.MatchersProprios.caiNumaSegunda;
 import static br.ce.wcaquino.matchers.MatchersProprios.ehHoje;
 import static br.ce.wcaquino.matchers.MatchersProprios.ehHojeComDiferencaDias;
+import static br.ce.wcaquino.utils.DataUtils.verificarDiaSemana;
+import static java.util.Arrays.asList;
+import static java.util.Calendar.SATURDAY;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeFalse;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,7 +35,6 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
@@ -62,27 +66,18 @@ public class LocacaoServiceTest {
 	
 	@Before
 	public void setup() {
-		// coloque isso abaixo para iniciar os mocks e as linhas de baixo não serão mais necessárias
-		MockitoAnnotations.initMocks(this);
-		
-//		service = new LocacaoService();
-//		dao = Mockito.mock(LocacaoDao.class);
-//		service.setLocacaoDAO(dao);
-//		spc = Mockito.mock(SPCService.class);
-//		service.setSPCService(spc);
-//		email = Mockito.mock(EmailService.class);
-//		service.setEmailService(email);
+		initMocks(this);		
 	}
 
 	@Test
 	public void deveAlugarFilme() throws Exception {
 
 		// Ao testarmos no sábado
-		Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+		assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 		
 		// cenário
 		Usuario usuario = umUsuario().agora();
-		List<Filme> filmes = Arrays.asList(umFilme().comValor(5.0).agora());
+		List<Filme> filmes = asList(umFilme().comValor(5.0).agora());
 		
 		// ação
 		Locacao locacao = service.alugarFilme(usuario, filmes);
@@ -98,7 +93,7 @@ public class LocacaoServiceTest {
 		
 		// cenário
 		Usuario usuario = umUsuario().agora();
-		List<Filme> filmes = Arrays.asList(umFilmeSemEstoque().agora());
+		List<Filme> filmes = asList(umFilmeSemEstoque().agora());
 		
 		// ação
 		service.alugarFilme(usuario, filmes);
@@ -108,7 +103,7 @@ public class LocacaoServiceTest {
 	public void naoDeveAlugarFilmeSemUsuario() throws FilmeSemEstoqueException {
 		
 		// cenário
-		List<Filme> filmes = Arrays.asList(umFilme().agora());
+		List<Filme> filmes = asList(umFilme().agora());
 		
 		// ação
 		try {
@@ -134,11 +129,11 @@ public class LocacaoServiceTest {
 	
 	@Test
 	public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
-		Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+		Assume.assumeTrue(verificarDiaSemana(new Date(), SATURDAY));
 		
 		// cenário
 		Usuario usuario = umUsuario().agora();
-		List<Filme> filmes = Arrays.asList(umFilme().agora());
+		List<Filme> filmes = asList(umFilme().agora());
 		
 		// ação
 		Locacao retorno = service.alugarFilme(usuario, filmes);
@@ -148,11 +143,11 @@ public class LocacaoServiceTest {
 	}
 	
 	@Test
-	public void naoDeveAlugarFilmeParaNegativadoSPC() throws FilmeSemEstoqueException {
+	public void naoDeveAlugarFilmeParaNegativadoSPC() throws Exception {
 		// cenário
 		Usuario usuario = umUsuario().agora();
 //		Usuario usuario2 = umUsuario().comNome("Usuario 2").agora();
-		List<Filme> filmes = Arrays.asList(umFilme().agora());
+		List<Filme> filmes = asList(umFilme().agora());
 		
 //		when(spc.possuiNegativacao(usuario)).thenReturn(true); // ao invés de usar esse, vamos usar o matcher abaixo do any() para deixar mais genérico
 		when(spc.possuiNegativacao(Mockito.any(Usuario.class))).thenReturn(true);
@@ -213,5 +208,24 @@ public class LocacaoServiceTest {
 		verify(email, Mockito.never()).notificarAtraso(usuario2); // com o aviso no Mockito, eu digo que não quero que o usuario2 seja notificado com atraso porque ele não tem atraso
 		verifyNoMoreInteractions(email);
 //		verifyZeroInteractions(spc); // não vai precisar na prática, mas deixei anotado para saber que existe
+	}
+	
+	@Test
+	public void deveTratarErroNoSPC() throws Exception {
+		// 1. cenário
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = asList(umFilme().agora());
+		
+		// * abaixo definiremos o comportamento do Mock
+		when(spc.possuiNegativacao(usuario)).thenThrow(new Exception("Falha cadastrófica"));
+		
+		// 2. verificação
+		exception.expect(LocadoraException.class);
+		exception.expectMessage("Problemas com SPC, tente novamente");
+		
+		// 3. ação
+		service.alugarFilme(usuario, filmes);
+		
+		
 	}
 }
