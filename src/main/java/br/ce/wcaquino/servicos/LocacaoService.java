@@ -90,17 +90,13 @@ public class LocacaoService {
 		}
 	}
 	
-	// não vamos mais precisar desses set abaixo
-//	public void setLocacaoDAO(LocacaoDao dao) {
-//		this.dao = dao;
-//	}
-//	
-//	public void setSPCService(SPCService spc) {
-//		spcService = spc;
-//	}
-//	
-//	public void setEmailService(EmailService email) {
-//		emailService = email;
-//	}
-	
+	public void prorrogarLocacao(Locacao locacao, int qtdDias) {
+		Locacao novaLocacao = new Locacao();
+		novaLocacao.setUsuario(locacao.getUsuario());
+		novaLocacao.setFilmes(locacao.getFilmes());
+		novaLocacao.setDataLocacao(new Date());
+		novaLocacao.setDataRetorno(DataUtils.obterDataComDiferencaDias(qtdDias));
+		novaLocacao.setValor(locacao.getValor() * qtdDias);
+		dao.salvar(novaLocacao);
+	}	
 }
