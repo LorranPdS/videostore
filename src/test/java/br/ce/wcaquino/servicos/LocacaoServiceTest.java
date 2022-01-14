@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -225,7 +226,37 @@ public class LocacaoServiceTest {
 		
 		// 3. ação
 		service.alugarFilme(usuario, filmes);
+	}
+	
+	@Test
+	public void deveProrrogaUmaLocacao() {
+		// cenário
+		Locacao locacao = umLocacao().agora();
 		
+		// ação
+		service.prorrogarLocacao(locacao, 3);
 		
+		// verificação
+		// como o método a ser verificado é do tipo void, vamos ter que fazer um outro tipo de verificação
+		ArgumentCaptor<Locacao> argCapt = ArgumentCaptor.forClass(Locacao.class);
+		Mockito.verify(dao).salvar(argCapt.capture());
+		Locacao locacaoRetornada = argCapt.getValue();
+		
+		error.checkThat(locacaoRetornada.getValor(), is(12.0)); // você pode causar um erro pra ver como sairá o erro da terceira linha
+		error.checkThat(locacaoRetornada.getDataLocacao(), ehHoje());
+		error.checkThat(locacaoRetornada.getDataRetorno(), ehHojeComDiferencaDias(3)); // aqui você pode tentar causar um erro
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
