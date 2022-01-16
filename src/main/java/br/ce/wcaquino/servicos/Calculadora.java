@@ -5,6 +5,7 @@ import br.ce.wcaquino.exceptions.NaoPodeDividirPorZeroException;
 public class Calculadora {
 
 	public int somar(int a, int b) {
+		System.out.println("Estou executando o método somar");
 		return a + b;
 	}
 
@@ -25,6 +26,11 @@ public class Calculadora {
 	
 	public static void main(String[] args) {
 		new Calculadora().divide("5", "0");
+	}
+	
+	// Usar Spy em métodos void funciona de uma outra forma também, veja
+	public void imprime() {
+		System.out.println("Passei aqui");
 	}
 
 }
