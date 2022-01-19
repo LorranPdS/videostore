@@ -7,13 +7,10 @@ import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
 import static br.ce.wcaquino.matchers.MatchersProprios.caiNumaSegunda;
 import static br.ce.wcaquino.matchers.MatchersProprios.ehHoje;
 import static br.ce.wcaquino.matchers.MatchersProprios.ehHojeComDiferencaDias;
-import static br.ce.wcaquino.utils.DataUtils.verificarDiaSemana;
 import static java.util.Arrays.asList;
-import static java.util.Calendar.SATURDAY;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeFalse;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -21,21 +18,23 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
@@ -45,13 +44,16 @@ import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
 
+// na linha abaixo estamos avisando ao JUnit que a execução do método 'deveDevolverNaSegundaAoAlugarNoSabado()' deve ser gerenciada pelo powermock
+//esse RunWith é você dizendo que é pra rodar com o que está entre parênteses
+//para o PowerMock conseguir fazer essas alterações no ambiente, ele precisa mexer com muita coisa por trás, então ele altera algumas coisas na classe para que ela responda às solicitações do PowerMock. Então nessa linha pedimos que ele prepare a classe para teste, no caso preparar a classe LocacaoService que está entre parênteses
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({LocacaoService.class, DataUtils.class}) // Esse DataUtils é eu pedindo ao Powermock preparar também a classe utilizada pelo 'ehHoje', e para isso vimos onde o 'new Date()' é feito no 'ehHoje'. Como vamos passar mais de uma classe, passamos entre colchetes.
 public class LocacaoServiceTest {
 
-	// vamos ter que criar aqueles 3 mocks com as anotações e injetar esses mocks na classe de teste abaixo (por isso a anotação injectmocks)
 	@InjectMocks
 	private LocacaoService service;
 	
-	// colocando essas anotações de mock o teste já vai saber que essas são as classes que estão mockadas
 	@Mock
 	private SPCService spc;
 	@Mock
@@ -73,12 +75,11 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveAlugarFilme() throws Exception {
 
-		// Ao testarmos no sábado
-		assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
-		
 		// cenário
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().comValor(5.0).agora());
+		
+		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(28, 4, 2017));
 		
 		// ação
 		Locacao locacao = service.alugarFilme(usuario, filmes);
@@ -87,6 +88,8 @@ public class LocacaoServiceTest {
 		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
 		error.checkThat(locacao.getDataLocacao(), ehHoje());
 		error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1));
+		error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(28, 4, 2017)), is(true));
+		error.checkThat(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterData(29, 4, 2017)), is(true));
 	}
 	
 	@Test(expected = FilmeSemEstoqueException.class)
@@ -129,28 +132,30 @@ public class LocacaoServiceTest {
 	}
 	
 	@Test
-	public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
-		Assume.assumeTrue(verificarDiaSemana(new Date(), SATURDAY));
-		
+	public void deveDevolverNaSegundaAoAlugarNoSabado() throws Exception {
 		// cenário
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().agora());
+		
+		// Agora vamos mockar o construtor do Date para que, pelo menos durante a execução desse teste seja um sábado
+		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(29, 4, 2017));
+		// acima está dizendo: quando eu solicitar uma nova instância do Date que não possui argumentos, então retorne a data acima que cai em um sábado
 		
 		// ação
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
 		// verificação
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
+		PowerMockito.verifyNew(Date.class, Mockito.times(2)).withNoArguments(); // para verificarmos se o construtor foi chamado.
+		// veja também como foi a integração do PowerMockito com o Mockito (no caso o Mockito.times(2))
 	}
 	
 	@Test
 	public void naoDeveAlugarFilmeParaNegativadoSPC() throws Exception {
 		// cenário
 		Usuario usuario = umUsuario().agora();
-//		Usuario usuario2 = umUsuario().comNome("Usuario 2").agora();
 		List<Filme> filmes = asList(umFilme().agora());
 		
-//		when(spc.possuiNegativacao(usuario)).thenReturn(true); // ao invés de usar esse, vamos usar o matcher abaixo do any() para deixar mais genérico
 		when(spc.possuiNegativacao(Mockito.any(Usuario.class))).thenReturn(true);
 		
 		// ação
