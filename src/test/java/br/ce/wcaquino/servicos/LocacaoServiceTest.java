@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.Assert;
@@ -44,11 +44,8 @@ import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
 
-// na linha abaixo estamos avisando ao JUnit que a execução do método 'deveDevolverNaSegundaAoAlugarNoSabado()' deve ser gerenciada pelo powermock
-//esse RunWith é você dizendo que é pra rodar com o que está entre parênteses
-//para o PowerMock conseguir fazer essas alterações no ambiente, ele precisa mexer com muita coisa por trás, então ele altera algumas coisas na classe para que ela responda às solicitações do PowerMock. Então nessa linha pedimos que ele prepare a classe para teste, no caso preparar a classe LocacaoService que está entre parênteses
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({LocacaoService.class, DataUtils.class}) // Esse DataUtils é eu pedindo ao Powermock preparar também a classe utilizada pelo 'ehHoje', e para isso vimos onde o 'new Date()' é feito no 'ehHoje'. Como vamos passar mais de uma classe, passamos entre colchetes.
+@PrepareForTest({LocacaoService.class})
 public class LocacaoServiceTest {
 
 	@InjectMocks
@@ -79,15 +76,22 @@ public class LocacaoServiceTest {
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().comValor(5.0).agora());
 		
-		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(28, 4, 2017));
+//		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(28, 4, 2017));
+		
+		Calendar calendar = Calendar.getInstance(); // Esse .getInstance() é uma instanciação que equivale ao 'new Date()' para o Date
+		calendar.set(Calendar.DAY_OF_MONTH, 28);
+		calendar.set(Calendar.MONTH, Calendar.APRIL);
+		calendar.set(Calendar.YEAR, 2017);
+		PowerMockito.mockStatic(Calendar.class);
+		PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
 		
 		// ação
 		Locacao locacao = service.alugarFilme(usuario, filmes);
 
 		// verificação
 		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
-		error.checkThat(locacao.getDataLocacao(), ehHoje());
-		error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1));
+//		error.checkThat(locacao.getDataLocacao(), ehHoje());
+//		error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1));
 		error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(28, 4, 2017)), is(true));
 		error.checkThat(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterData(29, 4, 2017)), is(true));
 	}
@@ -137,17 +141,24 @@ public class LocacaoServiceTest {
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().agora());
 		
-		// Agora vamos mockar o construtor do Date para que, pelo menos durante a execução desse teste seja um sábado
-		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(29, 4, 2017));
-		// acima está dizendo: quando eu solicitar uma nova instância do Date que não possui argumentos, então retorne a data acima que cai em um sábado
+//		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(29, 4, 2017));
+		Calendar calendar = Calendar.getInstance(); // Esse .getInstance() é uma instanciação que equivale ao 'new Date()' para o Date
+		calendar.set(Calendar.DAY_OF_MONTH, 29);
+		calendar.set(Calendar.MONTH, Calendar.APRIL);
+		calendar.set(Calendar.YEAR, 2017);
+		PowerMockito.mockStatic(Calendar.class);
+		PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
 		
 		// ação
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
 		// verificação
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
-		PowerMockito.verifyNew(Date.class, Mockito.times(2)).withNoArguments(); // para verificarmos se o construtor foi chamado.
-		// veja também como foi a integração do PowerMockito com o Mockito (no caso o Mockito.times(2))
+//		PowerMockito.verifyNew(Date.class, Mockito.times(2)).withNoArguments();
+		
+		// Para verificar a chamada de métodos estáticos, a anotação seria a que está abaixo
+		PowerMockito.verifyStatic(Calendar.class, Mockito.times(2));
+		Calendar.getInstance();
 	}
 	
 	@Test
@@ -191,7 +202,7 @@ public class LocacaoServiceTest {
 					.atrasado()
 					.comUsuario(usuario3)
 					.agora(),
-				umLocacao() // aqui seria uma situação em que o usuário 3 recebesse 2 emails de notificação
+				umLocacao()
 					.atrasado()
 					.comUsuario(usuario3)
 					.agora()
@@ -242,14 +253,13 @@ public class LocacaoServiceTest {
 		service.prorrogarLocacao(locacao, 3);
 		
 		// verificação
-		// como o método a ser verificado é do tipo void, vamos ter que fazer um outro tipo de verificação
 		ArgumentCaptor<Locacao> argCapt = ArgumentCaptor.forClass(Locacao.class);
 		Mockito.verify(dao).salvar(argCapt.capture());
 		Locacao locacaoRetornada = argCapt.getValue();
 		
-		error.checkThat(locacaoRetornada.getValor(), is(12.0)); // você pode causar um erro pra ver como sairá o erro da terceira linha
+		error.checkThat(locacaoRetornada.getValor(), is(12.0));
 		error.checkThat(locacaoRetornada.getDataLocacao(), ehHoje());
-		error.checkThat(locacaoRetornada.getDataRetorno(), ehHojeComDiferencaDias(3)); // aqui você pode tentar causar um erro
+		error.checkThat(locacaoRetornada.getDataRetorno(), ehHojeComDiferencaDias(3));
 	}
 }
 

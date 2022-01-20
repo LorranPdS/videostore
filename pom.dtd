@@ -1,8 +1,0 @@
-<!ELEMENT project (modelVersion,groupId,artifactId,version,dependencies)>
-<!ELEMENT modelVersion (#PCDATA)>
-<!ELEMENT groupId (#PCDATA)>
-<!ELEMENT artifactId (#PCDATA)>
-<!ELEMENT version (#PCDATA)>
-<!ELEMENT dependencies (#PCDATA|dependency|version|scope|artifactId)*>
-<!ELEMENT dependency (groupId?,artifactId?,version?,scope?)>
-<!ELEMENT scope (#PCDATA)>
