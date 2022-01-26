@@ -66,7 +66,8 @@ public class LocacaoServiceTest {
 	
 	@Before
 	public void setup() {
-		initMocks(this);		
+		initMocks(this);
+		service = PowerMockito.spy(service); // após feito isso, posso mockar o método que tinha criado
 	}
 
 	@Test
@@ -260,6 +261,23 @@ public class LocacaoServiceTest {
 		error.checkThat(locacaoRetornada.getValor(), is(12.0));
 		error.checkThat(locacaoRetornada.getDataLocacao(), ehHoje());
 		error.checkThat(locacaoRetornada.getDataRetorno(), ehHojeComDiferencaDias(3));
+	}
+	
+	@Test
+	public void deveAlugarFilme_SemCalcularValor() throws Exception {
+		// cenário
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
+		
+//		service.calcularValorLocacao -> como ele está privado no service, não conseguiremos ver ele, por isso iremos mocka-lo
+		PowerMockito.doReturn(1.0).when(service, "calcularValorLocacao", filmes); // aquele service é o método que eu quero mockar e em String vai o nome do método
+		
+		// ação
+		Locacao locacao = service.alugarFilme(usuario, filmes);
+		
+		// verificação
+		Assert.assertThat(locacao.getValor(), is(1.0));
+		PowerMockito.verifyPrivate(service).invoke("calcularValorLocacao", filmes);
 	}
 }
 
