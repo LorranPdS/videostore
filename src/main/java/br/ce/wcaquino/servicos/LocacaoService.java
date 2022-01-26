@@ -50,7 +50,28 @@ public class LocacaoService {
 		Locacao locacao = new Locacao();
 		locacao.setFilmes(filmes);
 		locacao.setUsuario(usuario);
-		locacao.setDataLocacao(Calendar.getInstance().getTime()); // essa é uma outra forma de se obter a data atual
+		locacao.setDataLocacao(Calendar.getInstance().getTime());
+		locacao.setValor(calcularValorLocacao(filmes));
+
+		//Entrega no dia seguinte
+		Date dataEntrega = Calendar.getInstance().getTime();
+		dataEntrega = adicionarDias(dataEntrega, 1);
+		
+		if(DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)) {
+			dataEntrega = adicionarDias(dataEntrega, 1);
+		}
+		locacao.setDataRetorno(dataEntrega);
+		
+		dao.salvar(locacao);
+		
+		return locacao;
+	}
+
+	// Vamos mockar o método abaixo
+	// Aqui abaixo foram selecionadas todas as linhas necessárias / botão direito / Refactor / Extracted Method / -> depois foi dado um nome para o método
+	private Double calcularValorLocacao(List<Filme> filmes) {
+		System.out.println("Este método não pode ser executado (individualmente) porque estará mockado...");
+		
 		Double valorTotal = 0d;
 
 		for(int i = 0; i < filmes.size(); i++) {
@@ -65,20 +86,7 @@ public class LocacaoService {
 				
 			valorTotal += valorFilme;
 		}
-		locacao.setValor(valorTotal);
-
-		//Entrega no dia seguinte
-		Date dataEntrega = Calendar.getInstance().getTime();
-		dataEntrega = adicionarDias(dataEntrega, 1);
-		
-		if(DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)) {
-			dataEntrega = adicionarDias(dataEntrega, 1);
-		}
-		locacao.setDataRetorno(dataEntrega);
-		
-		dao.salvar(locacao);
-		
-		return locacao;
+		return valorTotal;
 	}
 	
 	public void notificarAtrasos() {
