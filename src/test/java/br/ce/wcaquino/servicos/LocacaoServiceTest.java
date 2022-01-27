@@ -68,7 +68,7 @@ public class LocacaoServiceTest {
 	@Before
 	public void setup() {
 		initMocks(this);
-		service = PowerMockito.spy(service); // após feito isso, posso mockar o método que tinha criado
+		service = PowerMockito.spy(service);
 	}
 
 	@Test
@@ -78,9 +78,7 @@ public class LocacaoServiceTest {
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().comValor(5.0).agora());
 		
-//		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(28, 4, 2017));
-		
-		Calendar calendar = Calendar.getInstance(); // Esse .getInstance() é uma instanciação que equivale ao 'new Date()' para o Date
+		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, 28);
 		calendar.set(Calendar.MONTH, Calendar.APRIL);
 		calendar.set(Calendar.YEAR, 2017);
@@ -92,8 +90,6 @@ public class LocacaoServiceTest {
 
 		// verificação
 		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
-//		error.checkThat(locacao.getDataLocacao(), ehHoje());
-//		error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1));
 		error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(28, 4, 2017)), is(true));
 		error.checkThat(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterData(29, 4, 2017)), is(true));
 	}
@@ -143,8 +139,7 @@ public class LocacaoServiceTest {
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().agora());
 		
-//		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(29, 4, 2017));
-		Calendar calendar = Calendar.getInstance(); // Esse .getInstance() é uma instanciação que equivale ao 'new Date()' para o Date
+		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, 29);
 		calendar.set(Calendar.MONTH, Calendar.APRIL);
 		calendar.set(Calendar.YEAR, 2017);
@@ -156,9 +151,6 @@ public class LocacaoServiceTest {
 		
 		// verificação
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
-//		PowerMockito.verifyNew(Date.class, Mockito.times(2)).withNoArguments();
-		
-		// Para verificar a chamada de métodos estáticos, a anotação seria a que está abaixo
 		PowerMockito.verifyStatic(Calendar.class, Mockito.times(2));
 		Calendar.getInstance();
 	}
@@ -174,22 +166,21 @@ public class LocacaoServiceTest {
 		// ação
 		try {
 			service.alugarFilme(usuario, filmes);
-			// verificação
-			
+		
+		// verificação
 			Assert.fail();
 		} catch (LocadoraException e) {
 			Assert.assertThat(e.getMessage(), is("Usuário negativado"));
 		}
 		
 		Mockito.verify(spc).possuiNegativacao(usuario);
-//		Mockito.verify(spc).possuiNegativacao(usuario2);
 	}
 	
 	@Test
 	public void deveEnviarEmailParaLocacoesAtrasadas() {
 		// cenário
 		Usuario usuario = umUsuario().agora();
-		Usuario usuario2 = umUsuario().comNome("Usuario em dia").agora(); //-> essa seria a linha do unhappy path para termos certeza que não está sendo gerado um falso positivo
+		Usuario usuario2 = umUsuario().comNome("Usuario em dia").agora();
 		Usuario usuario3 = umUsuario().comNome("Outro atrasado").agora();
 		
 		List<Locacao> locacoes = Arrays.asList(
@@ -216,33 +207,27 @@ public class LocacaoServiceTest {
 		service.notificarAtrasos();
 		
 		// verificação
-		verify(email, times(3)).notificarAtraso(Mockito.any(Usuario.class)); // esse any() não serve apenas para objetos, mas você verificando-o, verá que serve para boolean, double, int, ...
-		verify(email).notificarAtraso(usuario); // veja que fizemos uma verificação do mesmo método descrito na ação
-
-//		verify(email, Mockito.times(2)).notificarAtraso(usuario3); // possibilidade 1: verifica 2 vezes a notificação
-//		verify(email, Mockito.atLeast(2)).notificarAtraso(usuario3); // possibilidade 2: verifica pelo menos 2 notificação
-//		verify(email, Mockito.atMost(5)).notificarAtraso(usuario3); // possibilidade 3: verifica no máximo 5 notificações
-		verify(email, Mockito.atLeastOnce()).notificarAtraso(usuario3); // possibilidade 4: verifica pelo menos 1 (não importa quantos emails forem enviados, se passar 1 já é considerado)
+		verify(email, times(3)).notificarAtraso(Mockito.any(Usuario.class));
+		verify(email).notificarAtraso(usuario);
+		verify(email, Mockito.atLeastOnce()).notificarAtraso(usuario3);
 		
-		verify(email, Mockito.never()).notificarAtraso(usuario2); // com o aviso no Mockito, eu digo que não quero que o usuario2 seja notificado com atraso porque ele não tem atraso
+		verify(email, Mockito.never()).notificarAtraso(usuario2);
 		verifyNoMoreInteractions(email);
-//		verifyZeroInteractions(spc); // não vai precisar na prática, mas deixei anotado para saber que existe
 	}
 	
 	@Test
 	public void deveTratarErroNoSPC() throws Exception {
-		// 1. cenário
+		// cenário
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().agora());
 		
-		// * abaixo definiremos o comportamento do Mock
 		when(spc.possuiNegativacao(usuario)).thenThrow(new Exception("Falha cadastrófica"));
 		
-		// 2. verificação
+		// verificação
 		exception.expect(LocadoraException.class);
 		exception.expectMessage("Problemas com SPC, tente novamente");
 		
-		// 3. ação
+		// ação
 		service.alugarFilme(usuario, filmes);
 	}
 	
@@ -270,7 +255,7 @@ public class LocacaoServiceTest {
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
-		PowerMockito.doReturn(1.0).when(service, "calcularValorLocacao", filmes); // aquele service é o método que eu quero mockar e em String vai o nome do método
+		PowerMockito.doReturn(1.0).when(service, "calcularValorLocacao", filmes);
 		
 		// ação
 		Locacao locacao = service.alugarFilme(usuario, filmes);

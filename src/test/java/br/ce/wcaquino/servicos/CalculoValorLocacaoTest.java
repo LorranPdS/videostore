@@ -29,7 +29,6 @@ import br.ce.wcaquino.exceptions.LocadoraException;
 @RunWith(Parameterized.class)
 public class CalculoValorLocacaoTest {
 
-	// aqui vou injetar os mocks
 	@InjectMocks
 	private LocacaoService service;
 	
@@ -50,14 +49,7 @@ public class CalculoValorLocacaoTest {
 	
 	@Before
 	public void setup() {
-		// coloco apenas a linha abaixo para iniciar as classes mockadas
-		MockitoAnnotations.initMocks(this);
-		
-//		service = new LocacaoService();
-//		LocacaoDao dao = Mockito.mock(LocacaoDao.class);
-//		service.setLocacaoDAO(dao);
-//		SPCService spc = Mockito.mock(SPCService.class);
-//		service.setSPCService(spc);
+		MockitoAnnotations.initMocks(this);		
 	}
 	
 	private static Filme filme1 = umFilme().agora();
@@ -89,7 +81,6 @@ public class CalculoValorLocacaoTest {
 		Locacao resultado = service.alugarFilme(usuario, filmes);
 			
 		// verificação
-		// O valor seria o seguinte: 4+4+3+2+1=14
 		assertThat(resultado.getValor(), is(valorLocacao));
 	}
 }

@@ -67,8 +67,6 @@ public class LocacaoService {
 		return locacao;
 	}
 
-	// Vamos mockar o método abaixo
-	// Aqui abaixo foram selecionadas todas as linhas necessárias / botão direito / Refactor / Extracted Method / -> depois foi dado um nome para o método
 	private Double calcularValorLocacao(List<Filme> filmes) {
 		System.out.println("Este método não pode ser executado (individualmente) porque estará mockado...");
 		
