@@ -28,7 +28,6 @@ public class Calculadora {
 		new Calculadora().divide("5", "0");
 	}
 	
-	// Usar Spy em métodos void funciona de uma outra forma também, veja
 	public void imprime() {
 		System.out.println("Passei aqui");
 	}
