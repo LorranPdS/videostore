@@ -35,6 +35,7 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
@@ -269,7 +270,6 @@ public class LocacaoServiceTest {
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
-//		service.calcularValorLocacao -> como ele está privado no service, não conseguiremos ver ele, por isso iremos mocka-lo
 		PowerMockito.doReturn(1.0).when(service, "calcularValorLocacao", filmes); // aquele service é o método que eu quero mockar e em String vai o nome do método
 		
 		// ação
@@ -279,17 +279,16 @@ public class LocacaoServiceTest {
 		Assert.assertThat(locacao.getValor(), is(1.0));
 		PowerMockito.verifyPrivate(service).invoke("calcularValorLocacao", filmes);
 	}
+	
+	@Test
+	public void deveCalcularValorLocacao() throws Exception {
+		// cenário
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
+		
+		// ação
+		Double valor = (Double) Whitebox.invokeMethod(service, "calcularValorLocacao", filmes);
+		
+		// verificação
+		Assert.assertThat(valor, is(4.0));
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
