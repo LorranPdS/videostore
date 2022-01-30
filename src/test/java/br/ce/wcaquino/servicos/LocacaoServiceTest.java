@@ -46,7 +46,7 @@ import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.runners.ParallelRunner;
 import br.ce.wcaquino.utils.DataUtils;
 
-@RunWith(ParallelRunner.class) // ele irá rodar os testes de uma classe inteira e depois rodar os testes da outra classe, então ainda não está tão paralela
+@RunWith(ParallelRunner.class)
 public class LocacaoServiceTest {
 
 	@InjectMocks @Spy
@@ -242,18 +242,16 @@ public class LocacaoServiceTest {
 		error.checkThat(locacaoRetornada.getDataRetorno(), ehHojeComDiferencaDias(3));
 	}
 	
-	@Test // Abaixo é uma forma de você pode usar para invocar métodos privados diretamente sem uso do PowerMock
+	@Test
 	public void deveCalcularValorLocacao() throws Exception {
 		// cenário
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
 		// ação
-//		Vamos tirar esse Whitebox para usar logo abaixo um recurso do próprio Java (que é o reflect) para testarmos ao invés de ficarmos mockando métodos privados
-//		Double valor = (Double) Whitebox.invokeMethod(service, "calcularValorLocacao", filmes);
-		Class<LocacaoService> clazz = LocacaoService.class; // Aqui definimos a classe a usar o reflection porque a partir dela vamos extrair o método
-		Method metodo = clazz.getDeclaredMethod("calcularValorLocacao", List.class); // com o getDeclaredMethod eu tenho acesso a todos os métodos da classe (inclusive os que não estão visíveis). Colocamos o nome do método entre aspas e depois os tipos dos parâmetros que são enviados
-		metodo.setAccessible(true); // Para deixar o método acessível
-		Double valor = (Double) metodo.invoke(service, filmes); // Agora basta invocá-lo dizendo no 1° param o objeto que vai invocar (que é instância de LocacaoService) e no 2°param os parâmetros que devo enviar
+		Class<LocacaoService> clazz = LocacaoService.class;
+		Method metodo = clazz.getDeclaredMethod("calcularValorLocacao", List.class);
+		metodo.setAccessible(true);
+		Double valor = (Double) metodo.invoke(service, filmes);
 		
 		// verificação
 		Assert.assertThat(valor, is(4.0));

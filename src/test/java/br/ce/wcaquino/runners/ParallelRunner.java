@@ -8,7 +8,6 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerScheduler;
 
-// Então esse aqui é nosso Runner Paralelo
 public class ParallelRunner extends BlockJUnit4ClassRunner {
 
 	public ParallelRunner(Class<?> klass) throws InitializationError {
@@ -21,7 +20,7 @@ public class ParallelRunner extends BlockJUnit4ClassRunner {
 		private ExecutorService executor;
 		
 		public ThreadPoll() {
-			executor = Executors.newFixedThreadPool(2); // aqui é o número de threads que eu quero que ele execute. O Java é quem vai gerenciar, mas interessante não aumentar tanto
+			executor = Executors.newFixedThreadPool(2);
 		}
 
 		@Override
