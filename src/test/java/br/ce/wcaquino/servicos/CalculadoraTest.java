@@ -9,15 +9,8 @@ import org.junit.runner.RunWith;
 import br.ce.wcaquino.exceptions.NaoPodeDividirPorZeroException;
 import br.ce.wcaquino.runners.ParallelRunner;
 
-// No início do curso, o professor falou que, quando uma classe não está determinando explicitamente qual é o Runner dela, é como se tivesse essa anotação abaixo
-//@RunWith(JUnit4.class)
-
-// Porém, veja que usaremos para execução o nosso Runner paralelo que acabamos de criar.
-@RunWith(ParallelRunner.class) // Rode antes com essa anotação comentada (para que rode com o JUnit4.class, depois rode com essa anotação aqui e compare o tempo de execução das duas
+@RunWith(ParallelRunner.class)
 public class CalculadoraTest {
-	
-	// A execução foi tão rápida que não deu pra perceber o paralelismo, então colocamos algumas impressões para que o mesmo seja notado
-	// Sem o ParallelRunner, você irá notar que as impressões do Before e do After virão uma a uma, mas com o uso do ParallelRunner, elas virão de duas em duas
 	
 	private Calculadora calc;
 	

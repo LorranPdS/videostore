@@ -4,16 +4,26 @@ This is an example project from the classic video store to practice unit testing
 ATALHO PARA EXECUÇÃO DO TESTE: Ctrl + F11 com o cursor em cima do nome do teste
 Oriente-se pelos commits exibidos no Github para seguir a sequência de aulas
 
-Aula 42 - Testes em paralelo, parte 1
+Aula 43 - Execução dos testes via Maven
 
-Agora que temos uma Suíte pronta, vamos tentar otimizar o seu tempo de execução.
-Durante o curso, o professor falou bastante sobre o FIRST, onde o F remete justamente à rapidez na execução.
-Como já otimizamos o projeto a nível de código, agora vamos otimiza-lo a nível de execução e o professor explica na aula como a nossa Suíte está sendo executada e como pretendemos fazer para que o tempo de execução diminua mais ainda.
+A segunda parte da execução em paralelo utiliza um plugin do Maven, e é por isso que seremos apresentados primeiro como executar os testes via Maven. É uma execução bem simples uma vez que nosso ambiente esteja configurado, e nesta aula aprenderemos a configurar esse ambiente.
 
-Antes das nossas modificações desta aula, os testes estavam sendo executados um após o outro de forma serializada até que o último teste fosse executado e o tempo total de execução é mostrado.
+O Maven está funcionando dentro do Eclipse porque ele possui controle sobre o ambiente. Uma vez que eu coloque dentro do arquivo pom.xml as bibliotecas que eu preciso, automaticamente o Maven vai baixa-las para mim e elas ficarão disponíveis para mim no Maven Dependencies, PORÉM, e se eu quiser executar por fora via linha de comando? É o que faremos.
 
-O professor mostra uma segunda possibilidade em que um computador é potente e consegue executar dois testes ao mesmo tempo, e assim o tempo total de execução já será menor que o anterior pela execução de testes em paralelo, e quanto mais testes eu conseguir executar em paralelo, melhor ainda.
+1) entre no diretório que você está pelo cmd e dê o comando 'mvn'
+. o terminal não vai reconhecer o comando porque o maven que temos é só o que veio com o Eclipse, portanto eu tenho que ter um Maven na minha máquina, então vamos fazer o download do Maven, descompactar o arquivo zip e a seguir executar os seguintes comandos, no link https://maven.apache.org/download.cgi?Preferred=https%3A%2F%2Fdlcdn.apache.org%2F com extensão -in.zip
 
-Um terceiro cenário seria a situação em que os testes possuem durações distintas (que é o que vai acontecer em uma situação real) e de início, cada linha de execução pegará um dos testes da lista e, quando algum termina, já vai procurar o próximo a ser executado (ao invés de ficar esperando o outro terminar), ou seja, os testes não são divididos igualmente, e dessa forma conseguiremos otimizar melhor o tempo de execução da nossa bateria de testes.
+2) abrir o cmd na pasta bin do Maven baixado. Eu já tinha ele no diretório C: então já abri por lá
 
-Vamos então fazer uma execução paralela dos nossos testes. Infelizmente o JUnit não tem suporte nativa ao paralelismo, então iremos criar um novo Runner que irá nos dar esse poder.
+3) dê o comando mvn novamente
+. dará um problema no build porque esse não é o projeto mas sim a própria pasta do Maven, então para eu conseguir executar esse comando na pasta do meu projeto, eu preciso adicionar esses comandos no path do meu Sistema Operacional para que o comando 'mvn' seja um comando reconhecido por ele, e para isso cada SO possui uma particularidade e o professor passou na aula como fazer em cada SO
+
+. basicamente vamos adicionar ao path da minha aplicação o endereço de onde o maven foi descompactado, que seria na pasta bin do Maven
+
+. o que iremos fazer é ir nas Variáveis de Ambiente do windows e adicionar o caminho da pasta bin, que será esse caminho aqui. Aqui temos esse tutorial: https://dicasdejava.com.br/como-instalar-o-maven-no-windows/
+
+4) depois de seguir o tutorial, abra novamente o cmd no projeto (conforme o item 1 descrito, no caminho C:\workspace\videostore e execute novamente o 'mvn' (é o mesmo caminho do README.md do meu projeto).
+
+5) vai dar problema de build porque não fomos específicos com o que queríamos, então agora vamos executar o teste com maven executando o comando 'mvn test', e com esse comando eu estou pedindo que o maven execute os testes do meu projeto. Na primeira vez vai demorar um pouco porque serão baixadas algumas dependências, mas se deu BUILD SUCESS no final e antes foram executados os testes, foi porque deu tudo certo.
+
+Configurado o Maven, agora sim poderemos passar para a próxima aula.
