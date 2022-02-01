@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,21 +59,33 @@ public class LocacaoServiceTest_PowerMock {
 	public void setup() {
 		initMocks(this);
 		service = PowerMockito.spy(service);
+		System.out.println("Iniciando 4...");
+		CalculadoraTest.ordem.append(4);
+	}
+	
+	@After
+	public void tearDown() {
+		System.out.println("Finalizando 4...");
+	}
+	
+	@AfterClass
+	public static void tearDownClass() {
+		System.out.println(CalculadoraTest.ordem.toString());
 	}
 
 	@Test
 	public void deveAlugarFilme() throws Exception {
 
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().comValor(5.0).agora());
 		
 		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(28, 4, 2017));
 		
-		// ação
+		// aï¿½ï¿½o
 		Locacao locacao = service.alugarFilme(usuario, filmes);
 
-		// verificação
+		// verificaï¿½ï¿½o
 		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
 		error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(28, 4, 2017)), is(true));
 		error.checkThat(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterData(29, 4, 2017)), is(true));
@@ -79,44 +93,44 @@ public class LocacaoServiceTest_PowerMock {
 	
 	@Test
 	public void deveDevolverNaSegundaAoAlugarNoSabado() throws Exception {
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().agora());
 		
 		PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(29, 4, 2017));
 		
-		// ação
+		// aï¿½ï¿½o
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
 	}
 	
 	@Test
 	public void deveAlugarFilme_SemCalcularValor() throws Exception {
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
 		PowerMockito.doReturn(1.0).when(service, "calcularValorLocacao", filmes);
 		
-		// ação
+		// aï¿½ï¿½o
 		Locacao locacao = service.alugarFilme(usuario, filmes);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		Assert.assertThat(locacao.getValor(), is(1.0));
 		PowerMockito.verifyPrivate(service).invoke("calcularValorLocacao", filmes);
 	}
 	
 	@Test
 	public void deveCalcularValorLocacao() throws Exception {
-		// cenário
+		// cenï¿½rio
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
-		// ação
+		// aï¿½ï¿½o
 		Double valor = (Double) Whitebox.invokeMethod(service, "calcularValorLocacao", filmes);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		Assert.assertThat(valor, is(4.0));
 	}
 }

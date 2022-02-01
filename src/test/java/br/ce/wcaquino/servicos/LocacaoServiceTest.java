@@ -24,13 +24,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -43,10 +43,8 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
-import br.ce.wcaquino.runners.ParallelRunner;
 import br.ce.wcaquino.utils.DataUtils;
 
-@RunWith(ParallelRunner.class)
 public class LocacaoServiceTest {
 
 	@InjectMocks @Spy
@@ -69,26 +67,32 @@ public class LocacaoServiceTest {
 	public void setup() {
 		initMocks(this);
 		System.out.println("Iniciando 2...");
+		CalculadoraTest.ordem.append("2");
 	}
 	
 	@After
 	public void tearDown() {
 		System.out.println("Finalizando 2...");
 	}
+	
+	@AfterClass
+	public static void tearDownClass() {
+		System.out.println(CalculadoraTest.ordem.toString());
+	}
 
 	@Test
 	public void deveAlugarFilme() throws Exception {
 
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().comValor(5.0).agora());
 		
 		Mockito.doReturn(DataUtils.obterData(28, 4, 2017)).when(service).obterData();
 		
-		// ação
+		// aï¿½ï¿½o
 		Locacao locacao = service.alugarFilme(usuario, filmes);
 
-		// verificação
+		// verificaï¿½ï¿½o
 		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
 		error.checkThat(isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(28, 4, 2017)), is(true));
 		error.checkThat(isMesmaData(locacao.getDataRetorno(), obterData(29, 4, 2017)), is(true));
@@ -97,73 +101,73 @@ public class LocacaoServiceTest {
 	@Test(expected = FilmeSemEstoqueException.class)
 	public void naoDeveAlugarFilmeSemEstoque() throws Exception {
 		
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilmeSemEstoque().agora());
 		
-		// ação
+		// aï¿½ï¿½o
 		service.alugarFilme(usuario, filmes);
 	}
 	
 	@Test
 	public void naoDeveAlugarFilmeSemUsuario() throws FilmeSemEstoqueException {
 		
-		// cenário
+		// cenï¿½rio
 		List<Filme> filmes = asList(umFilme().agora());
 		
-		// ação
+		// aï¿½ï¿½o
 		try {
 			service.alugarFilme(null, filmes);
 			Assert.fail();
 		} catch (LocadoraException e) {
-			assertThat(e.getMessage(), is("Usuário vazio"));
+			assertThat(e.getMessage(), is("Usuï¿½rio vazio"));
 		}
 	}
 	
 	@Test
 	public void naoDeveAlugarFilmeSemFilme() throws FilmeSemEstoqueException, LocadoraException {
 		
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		
 		exception.expect(LocadoraException.class);
 		exception.expectMessage("Filme vazio");
 		
-		// ação
+		// aï¿½ï¿½o
 		service.alugarFilme(usuario, null);
 	}
 	
 	@Test
 	public void deveDevolverNaSegundaAoAlugarNoSabado() throws Exception {
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().agora());
 		
 		Mockito.doReturn(DataUtils.obterData(29, 4, 2017)).when(service).obterData();
 		
-		// ação
+		// aï¿½ï¿½o
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
 	}
 	
 	@Test
 	public void naoDeveAlugarFilmeParaNegativadoSPC() throws Exception {
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().agora());
 		
 		when(spc.possuiNegativacao(Mockito.any(Usuario.class))).thenReturn(true);
 		
-		// ação
+		// aï¿½ï¿½o
 		try {
 			service.alugarFilme(usuario, filmes);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 			Assert.fail();
 		} catch (LocadoraException e) {
-			Assert.assertThat(e.getMessage(), is("Usuário negativado"));
+			Assert.assertThat(e.getMessage(), is("Usuï¿½rio negativado"));
 		}
 		
 		Mockito.verify(spc).possuiNegativacao(usuario);
@@ -171,7 +175,7 @@ public class LocacaoServiceTest {
 	
 	@Test
 	public void deveEnviarEmailParaLocacoesAtrasadas() {
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		Usuario usuario2 = umUsuario().comNome("Usuario em dia").agora();
 		Usuario usuario3 = umUsuario().comNome("Outro atrasado").agora();
@@ -196,10 +200,10 @@ public class LocacaoServiceTest {
 		
 		when(dao.obterLocacoesPendentes()).thenReturn(locacoes);
 		
-		// ação
+		// aï¿½ï¿½o
 		service.notificarAtrasos();
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		verify(email, times(3)).notificarAtraso(Mockito.any(Usuario.class));
 		verify(email).notificarAtraso(usuario);
 		verify(email, Mockito.atLeastOnce()).notificarAtraso(usuario3);
@@ -210,29 +214,29 @@ public class LocacaoServiceTest {
 	
 	@Test
 	public void deveTratarErroNoSPC() throws Exception {
-		// cenário
+		// cenï¿½rio
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = asList(umFilme().agora());
 		
-		when(spc.possuiNegativacao(usuario)).thenThrow(new Exception("Falha cadastrófica"));
+		when(spc.possuiNegativacao(usuario)).thenThrow(new Exception("Falha cadastrï¿½fica"));
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		exception.expect(LocadoraException.class);
 		exception.expectMessage("Problemas com SPC, tente novamente");
 		
-		// ação
+		// aï¿½ï¿½o
 		service.alugarFilme(usuario, filmes);
 	}
 	
 	@Test
 	public void deveProrrogaUmaLocacao() {
-		// cenário
+		// cenï¿½rio
 		Locacao locacao = umLocacao().agora();
 		
-		// ação
+		// aï¿½ï¿½o
 		service.prorrogarLocacao(locacao, 3);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		ArgumentCaptor<Locacao> argCapt = ArgumentCaptor.forClass(Locacao.class);
 		Mockito.verify(dao).salvar(argCapt.capture());
 		Locacao locacaoRetornada = argCapt.getValue();
@@ -244,16 +248,16 @@ public class LocacaoServiceTest {
 	
 	@Test
 	public void deveCalcularValorLocacao() throws Exception {
-		// cenário
+		// cenï¿½rio
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
-		// ação
+		// aï¿½ï¿½o
 		Class<LocacaoService> clazz = LocacaoService.class;
 		Method metodo = clazz.getDeclaredMethod("calcularValorLocacao", List.class);
 		metodo.setAccessible(true);
 		Double valor = (Double) metodo.invoke(service, filmes);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		Assert.assertThat(valor, is(4.0));
 	}
 }

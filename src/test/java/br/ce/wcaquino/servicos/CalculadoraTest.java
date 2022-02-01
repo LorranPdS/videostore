@@ -1,16 +1,17 @@
 package br.ce.wcaquino.servicos;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import br.ce.wcaquino.exceptions.NaoPodeDividirPorZeroException;
-import br.ce.wcaquino.runners.ParallelRunner;
 
-@RunWith(ParallelRunner.class)
 public class CalculadoraTest {
+	
+	// sÃ³ para mostrar que o paralelismo ainda estÃ¡ funcionando, mesmo que pelo maven
+	public static StringBuffer ordem = new StringBuffer();
 	
 	private Calculadora calc;
 	
@@ -18,59 +19,65 @@ public class CalculadoraTest {
 	public void setup() {
 		calc = new Calculadora();
 		System.out.println("Iniciando...");
+		ordem.append("1");
 	}
 	
 	@After
 	public void tearDown() {
 		System.out.println("Finalizando...");
 	}
+	
+	@AfterClass
+	public static void tearDownClass() {
+		System.out.println(ordem.toString());
+	}
 
 	@Test
 	public void deveSomarDoisValores() {
-		// cenário
+		// cenï¿½rio
 		int a = 5;
 		int b = 3;
 		
-		// ação
+		// aï¿½ï¿½o
 		int resultado = calc.somar(a, b);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		Assert.assertEquals(8, resultado);
 	}
 	
 	@Test
 	public void deveSubtrairDoisValores() {
-		// cenário
+		// cenï¿½rio
 		int a = 8;
 		int b = 5;
 		
-		// ação
+		// aï¿½ï¿½o
 		int resultado = calc.subtrair(a, b);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		Assert.assertEquals(3, resultado);
 	}
 	
 	@Test
 	public void deveDividirDoisValores() throws NaoPodeDividirPorZeroException {
-		// cenário
+		// cenï¿½rio
 		int a = 6;
 		int b = 3;
 		
-		// ação
+		// aï¿½ï¿½o
 		int resultado = calc.divide(a, b);
 		
-		// verificação
+		// verificaï¿½ï¿½o
 		Assert.assertEquals(2, resultado);
 	}
 	
 	@Test(expected = NaoPodeDividirPorZeroException.class)
 	public void deveLancarExcecaoAoDividirPorZero() throws NaoPodeDividirPorZeroException {
-		// cenário
+		// cenï¿½rio
 		int a = 10;
 		int b = 0;
 		
-		// ação
+		// aï¿½ï¿½o
 		calc.divide(a, b);
 	}
 	
